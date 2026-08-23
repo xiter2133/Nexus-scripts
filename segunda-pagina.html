@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kratos Panel | Biblioteca de Scripts</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            background-color: #07090e;
+            color: #f8fafc;
+            margin: 0;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .sidebar {
+            width: 300px;
+            background: #0d111a;
+            border-right: 1px solid rgba(168, 85, 247, 0.15);
+            display: flex;
+            flex-direction: column;
+            padding: 25px 20px;
+            flex-shrink: 0;
+        }
+        .sidebar h2 {
+            font-size: 16px;
+            color: #c084fc;
+            margin-top: 0;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        /* Estilos de la barra de búsqueda */
+        .search-box {
+            width: 100%;
+            padding: 10px 14px;
+            margin-bottom: 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            color: #fff;
+            font-size: 13px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        .search-box:focus {
+            border-color: #a855f7;
+            box-shadow: 0 0 10px rgba(168, 85, 247, 0.2);
+        }
+
+        .game-list { list-style: none; padding: 0; margin: 0; overflow-y: auto; flex: 1; }
+        .game-item {
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 14px;
+            transition: all 0.3s ease;
+            color: #94a3b8;
+        }
+        .game-item:hover {
+            background: rgba(168, 85, 247, 0.1);
+            color: #fff;
+            border-color: rgba(168, 85, 247, 0.3);
+        }
+        .game-item.active {
+            background: linear-gradient(135deg, #7e22ce, #a855f7);
+            color: #fff;
+            box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
+            border-color: transparent;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: radial-gradient(circle at top right, #180d38 0%, #07090e 60%);
+            overflow-y: auto;
+        }
+        .top-banner {
+            padding: 35px 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(13, 17, 26, 0.5);
+            backdrop-filter: blur(10px);
+        }
+        .top-banner h1 { margin: 0 0 8px 0; font-size: 28px; color: #fff; text-shadow: 0 0 15px rgba(168, 85, 247, 0.3); }
+        .top-banner p { margin: 0; color: #94a3b8; font-size: 14px; }
+
+        .scripts-container {
+            padding: 40px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .script-card {
+            background: rgba(13, 17, 26, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 14px;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+        }
+        .script-card:hover {
+            transform: translateY(-4px);
+            border-color: #a855f7;
+            box-shadow: 0 8px 25px rgba(168, 85, 247, 0.15);
+        }
+        .script-title { font-size: 17px; font-weight: bold; color: #38bdf8; margin-bottom: 10px; }
+        .script-desc { font-size: 13px; color: #94a3b8; margin-bottom: 25px; line-height: 1.5; }
+        .btn-select {
+            background: linear-gradient(135deg, #22c55e, #16a34a);
+            color: white;
+            border: none;
+            padding: 12px 18px;
+            font-size: 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            text-align: center;
+            text-decoration: none;
+            box-shadow: 0 4px 15px rgba(34, 197, 94, 0.3);
+            transition: transform 0.2s;
+        }
+        .btn-select:hover { transform: scale(1.02); }
+
+        .empty-catalog {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: #64748b;
+            padding: 60px;
+            font-style: italic;
+            font-size: 15px;
+        }
+
+        /* ==========================================
+           ADAPTACIÓN PARA CELULARES (Media Query)
+           ========================================== */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column;
+                height: auto;
+                overflow: auto;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 250px;
+                border-right: none;
+                border-bottom: 1px solid rgba(168, 85, 247, 0.15);
+            }
+            .main-content {
+                height: auto;
+                overflow: visible;
+            }
+            .top-banner {
+                padding: 20px;
+            }
+            .scripts-container {
+                padding: 20px;
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <h2>🎮 Catálogo Roblox</h2>
+        <!-- Barra de búsqueda agregada aquí -->
+        <input type="text" id="search-input" class="search-box" placeholder="Buscar juego..." onkeyup="filterGames()">
+        <ul class="game-list" id="game-list"></ul>
+    </div>
+
+    <div class="main-content">
+        <div class="top-banner">
+            <h1 id="banner-title">Panel de Scripts</h1>
+            <p id="banner-desc">Selecciona un juego del panel izquierdo.</p>
+        </div>
+        <div class="scripts-container" id="scripts-grid"></div>
+    </div>
+
+    <script>
+        // Tu base de datos de juegos y scripts
+        const database = {
+            "+1 Monkey Seed Escape ": [
+                {name: "Auto Farm", desc: "Descripcion del script.", id: "bf-1"}
+            ]
+        };
+
+        const gameListEl = document.getElementById('game-list');
+        const grid = document.getElementById('scripts-grid');
+        const bannerTitle = document.getElementById('banner-title');
+        const bannerDesc = document.getElementById('banner-desc');
+        const searchInput = document.getElementById('search-input');
+
+        function loadSidebar(filterText = "") {
+            gameListEl.innerHTML = "";
+            const gameNames = Object.keys(database);
+
+            // Filtrar juegos según lo que escriba el usuario
+            const filteredGames = gameNames.filter(gameName => 
+                gameName.toLowerCase().includes(filterText.toLowerCase())
+            );
+
+            if (filteredGames.length === 0) {
+                gameListEl.innerHTML = "<li style='color:#64748b; font-size:13px; text-align:center; padding:15px;'>No se encontró el juego</li>";
+                grid.innerHTML = `<div class="empty-catalog">No hay resultados para tu búsqueda.</div>`;
+                return;
+            }
+
+            filteredGames.forEach((gameName, index) => {
+                const li = document.createElement('li');
+                li.className = `game-item ${index === 0 && filterText === "" ? 'active' : ''}`;
+                li.innerText = "⚔️ " + gameName;
+                li.onclick = () => selectGame(gameName);
+                gameListEl.appendChild(li);
+            });
+
+            if (filterText === "" && filteredGames.length > 0) {
+                selectGame(filteredGames[0]);
+            }
+        }
+
+        function filterGames() {
+            const query = searchInput.value;
+            loadSidebar(query);
+        }
+
+        function selectGame(gameName) {
+            document.querySelectorAll('.game-item').forEach(item => {
+                item.classList.remove('active');
+                if(item.innerText.includes(gameName)) item.classList.add('active');
+            });
+
+            bannerTitle.innerText = gameName;
+            bannerDesc.innerText = `Scripts y utilidades disponibles para ${gameName}.`;
+            grid.innerHTML = "";
+
+            const scripts = database[gameName] || [];
+
+            if (scripts.length === 0) {
+                grid.innerHTML = `<div class="empty-catalog">No hay scripts disponibles para este juego todavía.</div>`;
+                return;
+            }
+
+            scripts.forEach(script => {
+                const card = document.createElement('div');
+                card.className = 'script-card';
+                card.innerHTML = `
+                    <div>
+                        <div class="script-title">${script.name}</div>
+                        <div class="script-desc">${script.desc}</div>
+                    </div>
+                    <a href="tercera-pagina.html?script=${script.id}" class="btn-select">Obtener Script 🚀</a>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        loadSidebar();
+    </script>
+</body>
+</html>
