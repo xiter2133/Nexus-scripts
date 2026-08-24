@@ -57,20 +57,22 @@
 
         p { color: #94a3b8; font-size: 15px; margin-bottom: 20px; }
 
-        /* Contenedores de banners adaptados para centrarse en cualquier pantalla */
+        /* Contenedor optimizado anti-cortes para los banners */
         .ad-banner-box {
             background: rgba(13, 17, 26, 0.9);
             border: 1px solid rgba(168, 85, 247, 0.2);
             border-radius: 12px;
-            padding: 15px;
+            padding: 12px;
             text-align: center;
-            margin: 35px 0;
+            margin: 35px auto;
             overflow-x: auto;
             overflow-y: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
             width: 100%;
+            max-width: 100%;
+            -webkit-overflow-scrolling: touch;
         }
 
         .unlock-section {
